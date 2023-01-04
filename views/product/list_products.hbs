@@ -1,0 +1,363 @@
+<div>
+    <div class="container-fluid">
+        <div id="search-form" class="row mt-3 justify-content-start">
+
+            <div class="col-12 col-md-6 col-xl-8 mb-3">
+                <div class="d-flex row justify-content-start">
+                    
+                    <div class="col">
+                        <a class="btn btn-primary btn-block gradient-custom-4" href="/product/add">
+                        <i class="fas fa-plus-circle"></i>
+                        Add product
+                    </a>
+                    </div>
+
+                    <div class="col">
+                        <div class="filter__sort ms-3">
+                            <div class="sort-list">
+                                <span class="sort-item">Sort by</span>
+                                <ul class="sort-by">
+                                    <li><a href="" id="default-sort" class="sort-item">
+                                            <span class="fw-bold">Default</span></a></li>
+
+                                    <li><a href="" id="price-asc" class="sort-item">Price:
+                                            <span class="fw-bold">Ascending</span></a></li>
+
+                                    <li><a href="" id="price-desc" class="sort-item">Price:
+                                            <span class="fw-bold">Descending</span></a></li>
+
+                                    <li><a href="" id="star-asc" class="sort-item">Rate star:
+                                            <span class="fw-bold">Ascending</span></a></li>
+
+                                    <li><a href="" id="star-desc" class="sort-item">Rate star:
+                                            <span class="fw-bold">Descending</span></a></li>
+
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col">
+                        <div class="filter__sort ms-3">
+                            <div class="sort-list">
+                                <span class="sort-item">Filter by Category</span>
+                                <ul class="sort-by">
+                                    <li><a href="" class="sort-item">
+                                            <span class="fw-bold">Default</span></a></li>
+                                    {{#each listCategory}}
+                                    <li><a href="" class="sort-item currentCategory" onclick="load_product_page(1, {{this.category_Id}}, 0)">
+                                            <span class="fw-bold">{{this.name}}</span></a></li>
+                                    {{/each}}
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col">
+                        <div class="filter__sort ms-3">
+                            <div class="sort-list">
+                                <span class="sort-item">Filter by Brand</span>
+                                <ul class="sort-by">
+                                    <li><a href="" class="sort-item">
+                                            <span class="fw-bold">Default</span></a></li>
+                                    {{#each listBrand}}
+                                    <li><a href="" class="sort-item currentBrand" onclick="load_product_page(1, 0, {{this.id}})">
+                                            <span class="fw-bold">{{this.name}}</span></a></li>
+                                    {{/each}}
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="col-12 col-md-6 col-xl-4 mb-3">
+                <div class="p-1 bg-light rounded rounded-pill shadow-lg d-flex justify-content-end">
+                    <div class="input-group">
+                        <input id="name_search" type="search" placeholder="Search product"
+                            aria-describedby="btn-search" class="form-control border-0 bg-light" />
+                        <div class="input-group-append">
+                            <button id="btn_submit_search" class="btn btn-link text-primary"><i
+                                    class="fa fa-search"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container-fluid mt-4">
+        <div class="table-responsive">
+            <table id="myTable" class="table table-hover table-striped table-bordered">
+                <thead class="text-center">
+                    <tr>
+                        <th>Name</th>
+                        <th>Description</th>
+                        <th>Quantity</th>
+                        <th>Price</th>
+                        <th>Image</th>
+                        <th>Category</th>
+                        <th>Brand</th>
+                        <th>Star</th>
+                        <th>Status</th>
+                        <th>Adjust</th>
+                    </tr>
+                </thead>
+
+                <tbody id="list_product">
+                    {{#each listProducts.data}}
+                        <tr>
+                            <td>{{this.name}}</td>
+                            <td>{{this.description}}</td>
+                            <td class="text-center">{{this.remain_Amount}}</td>
+                            <td class="text-center">{{this.price}}</td>
+                            <td>
+                                <img
+                                    src="{{this.image}}"
+                                    class="thumbnail img-responsive"
+                                    alt="image"
+                                    width="100"
+                                    height="100"
+                                    style="border-radius: 10px;"
+                                />
+                            </td>
+                            <td class="text-center">{{this.category_name}}</td>
+                            <td class="text-center">{{this.brand_name}}</td>
+                            <td class="text-center">{{this.rate_Star}}</td>
+                            <td class="text-center">{{this.status}}</td>
+                            <td>
+                                <div class="center">
+                                    <a href="/product/update/{{this.product_Id}}">
+                                        <i class="far fa-edit" title="Update product"></i>
+                                    </a>
+
+                                <a href="/product/delete/{{this.product_Id}}"
+                                    onclick="return confirm('Do you want to delete this product?')">
+                                    <i class="fas fa-trash" style="margin-left: 30px; color: red"
+                                        title="Delete product"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {{/each}}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <p id="total_page" style="display: none;">{{listProducts.total_page}}</p>
+    <div id="page_component" class="d-flex justify-content-center product__pagination">
+    </div>
+</div>
+
+<script>
+    let total_page = document.getElementById("total_page").innerText
+    console.log("total_page", total_page);
+    let pageComponent = document.getElementById("page_component")
+
+    let list_product = document.getElementById("list_product")
+    let preCateID = 0;
+    let preBrandID = 0;
+    let preNameSearch = '';
+    let preSort = '';
+    let preMin = 0;
+    let preMax = 0;
+
+    let btn_submit_search= document.getElementById("btn_submit_search")
+    let name_search= document.getElementById("name_search")
+
+    function load_product_page(page = 1, cate_id = preCateID, brand_id = preBrandID, name = preNameSearch, sort = preSort, min = preMin, max = preMax) {
+        console.log(page, cate_id, brand_id, typeof name);
+
+        if(cate_id == 0){
+            preCateID = 0;
+        } else{
+            name_search.value = '';
+            name_search.focus();
+            name_search.blur();
+        }
+
+        if(brand_id == 0){
+            preBrandID = 0;
+        } else {
+            name_search.value = '';
+            name_search.focus();
+            name_search.blur();
+        }
+
+        let htmlListProduct = ``
+        $.getJSON(`/api/product?page=${page}&cate_id=${cate_id || ''}&brand_id=${brand_id || ''}&name=${name || ''}&sort=${sort || ''}&min=${min || ''}&max=${max || ''}`, function (products) {
+            const data = products.data.map(v => {
+                v.price = v.price.toLocaleString('it-IT', { style: 'currency', currency: 'VND' });
+                return `
+                    <tr>
+                        <td>${v.name}</td>
+                        <td>${v.description}</td>
+                        <td class="text-center">${v.remain_Amount}</td>
+                        <td class="text-center">${v.price}</td>
+                        <td>
+                            <img
+                                src="${v.image}"
+                                class="thumbnail img-responsive"
+                                alt="image"
+                                width="100"
+                                height="100"
+                                style="border-radius: 10px;"
+                            />
+                        </td>
+                        <td class="text-center">${v.category_name}</td>
+                        <td class="text-center">${v.brand_name}</td>
+                        <td class="text-center">${v.rate_Star}</td>
+                        <td class="text-center">${v.status}</td>
+                        <td>
+                            <div class="center">
+                                <a href="/product/update/${v.product_Id}">
+                                    <i class="far fa-edit" title="Update product"></i>
+                                </a>
+                                <a href="/product/delete/${v.product_Id}" onclick="return confirm('Do you want to delete this product?')">
+                                    <i
+                                        class="fas fa-trash"
+                                        style="margin-left: 30px; color: red"
+                                        title="Delete product"
+                                    ></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                `
+            })
+            htmlListProduct = data.join("")
+            list_product.innerHTML = htmlListProduct
+            if (cate_id) {
+                if (preCateID !== cate_id) {
+                    renderPage(products.total_page, cate_id, brand_id, name, sort)
+                    preCateID = cate_id;
+                }
+
+            }
+            if (brand_id) {
+                if (preBrandID !== brand_id) {
+                    renderPage(products.total_page, cate_id, brand_id, name, sort)
+                    preBrandID = brand_id;
+                }
+
+            }
+            if (name) {
+                if (name !== preNameSearch) {
+                    renderPage(products.total_page, cate_id, brand_id, name, sort)
+                }
+                preNameSearch = name;
+
+            }
+            if (sort) {
+                if (sort !== preSort) {
+                    renderPage(products.total_page, cate_id, brand_id, name, sort)
+                    preSort = sort;
+                }
+
+            }
+            if (min) {
+                if (max != preMax) {
+                    renderPage(products.total_page, cate_id, brand_id, name, sort, min, max)
+                    preMax = max;
+                }
+                if (min != preMin) {
+                    renderPage(products.total_page, cate_id, brand_id, name, sort, min, max)
+                    preMin = min;
+                }
+            }
+        });
+    }
+
+    //handle form search
+    btn_submit_search.addEventListener("click", ()=>{
+        let name = name_search.value
+        
+        if(name.length == 0){
+            name = ' ';
+        }
+
+        load_product_page(1, 0, 0, name, '', 0, 0)
+    })
+
+    //handle sort
+    let default_sort = document.getElementById("default-sort")
+    let price_asc = document.getElementById("price-asc")
+    let price_desc = document.getElementById("price-desc")
+    let star_asc = document.getElementById("star-asc")
+    let star_desc = document.getElementById("star-desc")
+
+    default_sort.addEventListener('click', (e) => {
+        e.preventDefault()
+        load_product_page(1, preCateID, preBrandID, preNameSearch, 'default', preMin, preMax)
+    })
+    price_asc.addEventListener('click', (e) => {
+        e.preventDefault()
+        load_product_page(1, preCateID, preBrandID, preNameSearch, 'price-asc', preMin, preMax)
+    })
+    price_desc.addEventListener('click', (e) => {
+        e.preventDefault()
+        load_product_page(1, preCateID, preBrandID, preNameSearch, 'price-desc', preMin, preMax)
+    })
+    star_asc.addEventListener('click', (e) => {
+        e.preventDefault()
+        load_product_page(1, preCateID, preBrandID, preNameSearch, 'rate-star-asc', preMin, preMax)
+    })
+    star_desc.addEventListener('click', (e) => {
+        e.preventDefault()
+        load_product_page(1, preCateID, preBrandID, preNameSearch, 'rate-star-desc', preMin, preMax)
+    })
+
+    function renderPage(total_page = 1, cate_id = 0, brand_id = 0, name, sort, min, max) {
+        let pagingHtml = ``
+        for (let i = 1; i <= Number(total_page); i++) {
+            pagingHtml += `
+                <a href=""
+            class="currentPage" onclick="load_product_page(${i}, ${cate_id}, ${brand_id}, '${name || ''}', '${sort || ''}', ${min}, ${max})">${i}</a>
+            `
+        }
+        pageComponent.innerHTML = pagingHtml
+        activePage()
+    }
+    renderPage(total_page)
+    
+    function activePage() {
+        let pages = document.getElementsByClassName("currentPage")
+        let prePage = pages[0];
+        prePage.classList.add("is_active")
+        for (let page of pages) {
+            page.addEventListener('click', (e) => {
+                e.preventDefault()
+                e.target.classList.add("is_active")
+                prePage.classList.remove("is_active")
+                prePage = page
+            })
+        }
+    }
+    
+    let categories= document.getElementsByClassName("currentCategory")
+    let preCate;
+    //preCate.classList.add("is_active")
+    for (let cate of categories){
+        cate.addEventListener('click', (e)=>{
+            e.preventDefault()
+            {{!-- e.target.classList.add("is_active")
+            preCate.classList.remove("is_active") --}}
+            preCate= cate
+        })
+    }
+
+    let brands= document.getElementsByClassName("currentBrand")
+    let preBrand;
+    //preBrand.classList.add("is_active")
+    for (let brand of brands){
+        brand.addEventListener('click', (e)=>{
+            e.preventDefault()
+            {{!-- e.target.classList.add("is_active")
+            preBrand.classList.remove("is_active") --}}
+            preBrand= brand
+        })
+    }
+    
+</script>

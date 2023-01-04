@@ -1,0 +1,241 @@
+<div>
+    <div class="container-fluid">
+        <div id="search-form" class="row mt-3 justify-content-start">
+
+            <div class="col-12 col-md-6 col-xl-8 mb-3">
+                <div class="d-flex">
+                    <div class="filter__sort ms-3">
+                        <div class="sort-list">
+                            <span class="sort-item">Sort by</span>
+                            <ul class="sort-by">
+                                <li><a id="name-mail-asc" class="sort-item">Name or mail:
+                                        <span class="fw-bold">Ascending</span></a></li>
+                                <li><a id="name-mail-desc" class="sort-item">name or mail:
+                                        <span class="fw-bold">Descending</span></a></li>
+                                <li><a id="day-asc" class="sort-item">Register:
+                                        <span class="fw-bold">Ascending</span></a></li>
+                                <li><a id="day-desc" class="sort-item">Register:
+                                        <span class="fw-bold">Descending</span></a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12 col-md-6 col-xl-4 mb-3">
+                <div class="p-1 bg-light rounded rounded-pill shadow-lg d-flex justify-content-end">
+                    <div class="input-group">
+                        <input id="myInput" type="search" placeholder="Nhập email bạn cần tìm?"
+                            aria-describedby="btn-search" class="form-control border-0 bg-light" />
+                        <div class="input-group-append">
+                            <button onclick="findUserByEmailOrName()" id="btn-search"
+                                class="btn btn-link text-primary"><i class="fa fa-search"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container-fluid mt-4">
+        <div class="table-responsive">
+            <table id="myTable" class="table table-hover table-striped table-bordered">
+                <thead>
+                    <tr>
+                        <th>Email</th>
+                        <th>Name</th>
+                        <th>Address</th>
+
+                        <th>Fix</th>
+                    </tr>
+                </thead>
+
+                <tbody id="tbody_accounts">
+                    {{#each list_accounts.data}}
+                    <tr>
+                        <td>{{this.email}}</td>
+                        <td>{{this.fullname}}</td>
+                        <td>{{this.address}}</td>
+                        <td>
+                            <div class="row">
+                                <div class="col-3">
+                                    <a class="ban" onclick="banHandle({{this.user_Id}})">
+                                        {{#if this.isActive}}
+                                        <i class="fas fa-user-lock" style="color: red;" title="Ban"></i>
+                                        {{else }}
+                                        <i class="fas fa-check" style="color: green" title="Unban"></i>
+                                        {{/if}}
+                                    </a>
+                                </div>
+                                <div class="col-3">
+                                    <a class="detail_info" href="/accounts/detail/{{this.user_Id}}">
+                                        <i class="fas fa-info-circle" title="detail info"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    {{/each}}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="center">
+        <div class="mb-2 position-absolute" style="bottom: 0px;">
+            <nav aria-label="Page navigation example">
+                <ul class="pagination">
+                    <p id="total_page" style="display: none;">{{list_accounts.total_page}}</p>
+                    <div id="page_component" class="d-flex justify-content-center product__pagination">
+                </ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+<script>
+    let total_page = document.getElementById("total_page").innerText
+    let pageComponent = document.getElementById("page_component")
+    let list_account = document.getElementById("tbody_accounts")
+    let myInput = document.getElementById("myInput")
+    let name_email_asc = document.getElementById("name-mail-asc")
+    let name_email_desc = document.getElementById("name-mail-desc")
+    let day_asc = document.getElementById("day-asc")
+    let day_desc = document.getElementById("day-desc")
+
+
+
+
+    name_email_asc.addEventListener("click", (e) => {
+        load_account(1, preKeySearch, "name-mail-asc")
+    })
+    name_email_desc.addEventListener("click", (e) => {
+        load_account(1, preKeySearch, "name-mail-desc")
+    })
+    day_asc.addEventListener("click", (e) => {
+        load_account(1, preKeySearch, "day-asc")
+    })
+    day_desc.addEventListener("click", (e) => {
+        load_account(1, preKeySearch, "day-desc")
+    })
+
+    function findUserByEmailOrName() {
+        let keySearch = myInput.value
+
+        if (keySearch === "")
+            alert("Please input a name or email or reload page")
+        else {
+            if (!keySearch) {
+                console.log("Search for: ", keySearch)
+                preKeySearch = keySearch
+            }
+            load_account(1, keySearch)
+        }
+
+
+    }
+
+    let preKeySearch = '';
+    let preSort = ''
+    let prePage = 1;
+    function load_account(page = prePage, keySearch = preKeySearch, sort = preSort) {
+        let htmlListAccounts = ``
+        $.getJSON(`/api/accounts?page=${page}&search=${keySearch}&sort=${sort}`, function (accounts) {
+            const data = accounts.data.map(v => {
+                return `
+                    <tr>
+                        <td>${v.email}</td>
+                        <td>${v.fullname}</td>
+                        <td>${v.address}</td>
+                        <td>
+                            <div class="row">
+                                <div class="col-3">
+                                    <a 
+                                        class="ban"
+                                        onclick="banHandle(${v.user_Id})"                                      
+                                    >
+                                        ${v.isActive ?
+                        `<i
+                                                    class="fas fa-user-lock"
+                                                    style="color: red;"
+                                                    title="Ban"
+                                                ></i>`
+                        :
+                        `<i
+                                                    class="fas fa-check"
+                                                    style="color: green"
+                                                    title="Unban"
+                                                ></i>`
+                    }
+                                    </a>
+                                </div>
+                                <div class="col-3">
+                                    
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                `
+            })
+            htmlListAccounts = data.join("")
+            list_account.innerHTML = htmlListAccounts
+
+
+            if (prePage !== page) {
+                prePage = page
+            }
+
+
+            if (keySearch) {
+                console.log("key: ", keySearch)
+                console.log("pre key: ", preKeySearch)
+                if (preKeySearch !== keySearch) {
+                    renderPage(accounts.total_page, keySearch)
+                    preKeySearch = keySearch
+                }
+
+            }
+            if (sort) {
+                if (preSort !== sort) {
+                    renderPage(accounts.total_page, keySearch, sort)
+                    preSort = sort
+                }
+            }
+        })
+    }
+
+    function renderPage(total_page = 1, keySearch, sort) {
+        let pagingHtml = ``
+        for (let i = 1; i <= Number(total_page); i++) {
+            pagingHtml += `
+                <a class="currentPage" onclick="load_account(${i}, '${keySearch || ''}', '${sort || ''}')">${i}</alass=>
+            `
+        }
+        pageComponent.innerHTML = pagingHtml
+        activePage()
+    }
+    renderPage(total_page)
+
+    function activePage() {
+        let pages = document.getElementsByClassName("currentPage")
+        let prePage = pages[0];
+        prePage.classList.add("is_acctive")
+        for (let page of pages) {
+            page.addEventListener('click', (e) => {
+                e.preventDefault()
+                e.target.classList.add("is_acctive")
+                prePage.classList.remove("is_acctive")
+                prePage = page
+            })
+        }
+    }
+
+
+    var banHandle = (id) => {
+        if (id !== {{ user.user_Id }})
+        $.getJSON(`/api/accounts/ban/${id}`, function (err, data) {
+            load_account(prePage, preKeySearch, preSort)
+        })
+    }
+
+</script>

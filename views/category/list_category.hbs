@@ -1,0 +1,252 @@
+<div>
+    <div class="container-fluid">
+        <div id="search-form" class="row mt-3 justify-content-start">
+
+            <div class="col-12 col-md-6 col-xl-8 mb-3">
+                <a class="btn btn-primary btn-block gradient-custom-4" href="/category/add">
+                    <i class="fas fa-plus-circle"></i>
+                    Add category
+                </a>
+            </div>
+
+            <div class="col-12 col-md-6 col-xl-4 mb-3">
+                <div class="p-1 bg-light rounded rounded-pill shadow-lg d-flex justify-content-end">
+                    <div class="input-group">
+                        <input id="name_search" type="search" placeholder="Search category"
+                            aria-describedby="btn-search" class="form-control border-0 bg-light" />
+                        <div class="input-group-append">
+                            <button id="btn_submit_search" class="btn btn-link text-primary"><i
+                                    class="fa fa-search"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container-fluid mt-4">
+        <div class="table-responsive">
+            <table id="myTable" class="table table-hover table-striped table-bordered">
+                <thead>
+                    <tr>
+                        <th>Id</th>
+                        <th>Category name</th>
+                        <th>Image</th>
+                        <th>Number of Product</th>
+                        <th>Edit</th>
+                    </tr>
+                </thead>
+
+                <tbody id="list_category">
+                    {{#each listCategory.data}}
+                    <tr>
+                        <td>{{this.category_Id}}</td>
+                        <td>{{this.name}}</td>
+                        <td>
+                            <img src="{{this.image}}" class="thumbnail img-responsive" alt="image" width="100"
+                                height="100" style="border-radius: 10px;" />
+                        </td>
+                        {{!-- test --}}
+                        <td>{{this.productsCount}}</td>
+                        <td>
+                            <div class="center">
+                                <a href="/category/edit/{{this.category_Id}}">
+                                    <i class="far fa-edit" title="Edit category"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {{/each}}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <p id="total_page" style="display: none;">{{listCategory.total_page}}</p>
+    <div id="page_component" class="d-flex justify-content-center product__pagination">
+    </div>
+
+    {{! <div class="center">
+        <div class="mb-2">
+            <nav aria-label="Page navigation example">
+                <ul class="pagination">
+                    <li class="page-item disabled">
+                        <a class="page-link" href="/product" aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                            <span class="sr-only">Previous</span>
+                        </a>
+                    </li>
+                    <li class="page-item active">
+                        <a class="page-link" href="/product">1</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="/product">2</a>
+                    </li>
+
+                    <li class="page-item">
+                        <a class="page-link" href="/product" aria-label="Next">
+                            <span aria-hidden="true">&raquo;</span>
+                            <span class="sr-only">Next</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </div> }}
+</div>
+
+<script>
+    let total_page = document.getElementById("total_page").innerText;
+    let pageComponent = document.getElementById("page_component");
+    let list_category = document.getElementById("list_category");
+    let myInput = document.getElementById("myInput")
+
+    let btn_submit_search= document.getElementById("btn_submit_search")
+    let name_search= document.getElementById("name_search")
+
+    btn_submit_search.addEventListener("click", ()=>{
+        let name = name_search.value
+        
+        if(name.length == 0){
+            name = ' ';
+        }
+
+        load_category_page(1, name)
+    })
+
+    //let preCateID=0;
+    let preNameSearch = '';
+    //let preSort='';
+    //let preMin=0;
+    //let preMax=0;
+    //function load_product_page(page=1, cate_id=preCateID, name=preNameSearch, sort=preSort, min=preMin, max=preMax)
+    function load_category_page(page = 1, name = preNameSearch) {
+        //console.log(page, cate_id, typeof name)
+        //console.log(page typeof name)
+
+        let htmlListCategory = ``;
+        try {
+            $.getJSON(`/api/category?page=${page}&name=${name}`, function (categories) {
+                const data = categories.data.map(v => {
+                    return `
+                    <tr>
+                        <td>${v.category_Id}</td>
+                        <td>${v.name}</td>
+                        <td>
+                            <img
+                                src="${v.image}"
+                                class="thumbnail img-responsive"
+                                alt="image"
+                                width="100"
+                                height="100"
+                                style="border-radius: 10px;"
+                            />
+                        </td>
+                        <td>${v.productsCount}</td>
+                        <td>
+                            <div class="center">
+                                <a href="/category/edit/${v.category_Id}">
+                                    <i class="far fa-edit" title="Edit category"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                `
+                });
+                htmlListCategory = data.join("")
+                list_category.innerHTML = htmlListCategory
+
+                if (name) {
+                    if (name !== preNameSearch) {
+                        renderPage(categories.total_page, name)
+                    }
+                    preNameSearch = name;
+                }
+            });
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    /*
+
+    //handle form search
+    let btn_submit_search= document.getElementById("btn_submit_search")
+    let name_search= document.getElementById("name_search")
+    btn_submit_search.addEventListener("click", ()=>{
+        let name= name_search.value
+        
+        load_product_page(1, preCateID, name, preSort, preMin, preMax)
+    })
+    
+    //handle price 
+    let btn_search_slider = document.getElementById("btn-search-slider-price")
+    let minamount= document.getElementById("minamounth")
+    let maxamount= document.getElementById("maxamounth")
+    btn_search_slider.addEventListener("click", ()=>{
+        let min = minamount.value || 0
+        let max = maxamount.value || 0
+        if (max>min){
+            load_product_page(1, preCateID, preNameSearch, preSort, min, max)
+        }else {
+            alert("Invalid price")
+        }                        
+    })
+
+    //handle sort
+    let price_asc = document.getElementById("price-asc")
+    let price_desc = document.getElementById("price-desc")
+    let star_asc = document.getElementById("star-asc")
+    let star_desc = document.getElementById("star-desc")
+
+    
+
+    price_asc.addEventListener('click', (e)=>{
+        e.preventDefault()
+        load_product_page(1, preCateID, preNameSearch, 'price-asc', preMin, preMax)
+    })
+    price_desc.addEventListener('click', (e)=>{
+        e.preventDefault()
+        load_product_page(1, preCateID, preNameSearch, 'price-desc', preMin, preMax)
+    })
+    star_asc.addEventListener('click', (e)=>{
+        e.preventDefault()
+        load_product_page(1, preCateID, preNameSearch, 'rate-star-asc', preMin, preMax)
+    })
+    star_desc.addEventListener('click', (e)=>{
+        e.preventDefault()
+        load_product_page(1, preCateID, preNameSearch, 'rate-star-desc', preMin, preMax)
+    })
+
+    */
+
+
+    function renderPage(total_page = 1, name) {
+        console.log('renderPage called');
+        let pagingHtml = ``
+        console.log("total page",Number(total_page))
+        for (let i = 1; i <= Number(total_page); i++) {
+            pagingHtml += `
+            <a class="currentPage" onclick="load_category_page(${i},'${name || ''}')">${i}</a>
+            `
+        }
+        pageComponent.innerHTML = pagingHtml
+        activePage()
+    }
+    renderPage(total_page)
+
+    function activePage() {
+        let pages = document.getElementsByClassName("currentPage")
+        let prePage = pages[0];
+        prePage.classList.add("is_active")
+        for (let page of pages) {
+            page.addEventListener('click', (e) => {
+                e.preventDefault()
+                e.target.classList.add("is_active")
+                prePage.classList.remove("is_active")
+                prePage = page
+            })
+        }
+    }
+    
+</script>

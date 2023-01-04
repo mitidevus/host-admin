@@ -1,0 +1,225 @@
+<div class="background-wrapper">
+    <div class="mask d-flex align-items-center h-100 gradient-custom-3">
+        <div class="container h-100">
+            <div class="row d-flex justify-content-center align-items-center h-100">
+                <div class="col-12 col-md-9 col-lg-7 col-xl-6">
+                    <div class="card mt-4" style="border-radius: 15px;">
+                        <div class="card-body p-5">
+
+                            <h2 class="text-uppercase text-center mb-3">Update Product #{{product.product_Id}}</h2>
+
+                            <div style="display: none;" id="message" class="alert alert-danger" role="alert">
+                            </div>
+
+                            <form id="update-product-form" method="POST" action="/product/update/{{product.product_Id}}">
+                                <input type="hidden" name="id" value="{{product.product_Id}}" />
+
+                                <div class="row form-outline mb-2">
+                                    <div class="col-6">
+                                        <label class="form-label fw-bold" for="name">Name</label>
+                                        <input
+                                            name="name"
+                                            type="text"
+                                            id="name"
+                                            class="form-control"
+                                            value="{{product.name}}"
+                                            required
+                                        />
+                                    </div>
+                                    
+                                    <div class="col-3">
+                                        <label class="form-label fw-bold" for="status">Status</label>
+                                        <select id="status" name="status" class="form-control">
+                                            <option value="On stock">On stock</option>
+                                            <option value="Out of stock">Out of stock</option>
+                                            <option value="Suspend">Suspend</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="col-3">
+                                        <label class="form-label fw-bold" for="hot-product">Hot</label>
+                                        <select id="hot-product" name="hot_product" class="form-control">
+                                            <option value="1">Yes</option>
+                                            <option value="0">No</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="row form-outline mb-4">
+                                    <div class="col-3">
+                                        <label class="form-label fw-bold" for="price">Price</label>
+                                        <input
+                                            name="price"
+                                            type="number"
+                                            id="price"
+                                            class="form-control"
+                                            value="{{product.price}}"
+                                            required
+                                        />
+                                    </div>
+                                    <div class="col-3">
+                                        <label class="form-label fw-bold" for="quantity">Quantity</label>
+                                        <input
+                                            name="quantity"
+                                            type="number"
+                                            id="quantity"
+                                            class="form-control"
+                                            value="{{product.remain_Amount}}"
+                                            required
+                                        />
+                                    </div>
+                                    <div class="col-3">
+                                        <label class="form-label fw-bold" for="product-category">Category</label>
+                                        <select id="product-category" name="category_Id" class="form-control">
+                                            {{#each listCategory}}
+                                                <option value="{{this.category_Id}}">{{this.name}}</option>
+                                            {{/each}}
+                                        </select>
+                                    </div>
+                                    <div class="col-3">
+                                        <label class="form-label fw-bold" for="product-brand">Brand</label>
+                                        <select id="product-brand" name="brand_Id" class="form-control">
+                                            {{#each listBrand}}
+                                                <option value="{{this.id}}">{{this.name}}</option>
+                                            {{/each}}
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="row form-outline mb-2">
+                                    <div class="col-8">
+                                        <label class="form-label fw-bold" for="image">Image</label>
+                                        <input
+                                            name="image"
+                                            type="text"
+                                            id="image"
+                                            class="form-control"
+                                            value="{{product.image}}"
+                                            required
+                                        />
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="center">
+                                            <img src="{{product.image}}" alt="" width="100px" height="100px" />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-outline mb-4">
+                                    <label class="form-label fw-bold" for="description">Description</label>
+                                    <textarea
+                                        class="form-control"
+                                        id="description"
+                                        rows="3"
+                                        name="description"
+                                        required
+                                    >{{product.description}}</textarea>
+                                </div>
+                            </form>
+
+                            <div class="d-grid gap-2 mt-3">
+                                <button
+                                    onclick="myFunction()"
+                                    class="btn btn-primary btn-lg gradient-custom-4"
+                                    type="button"
+                                >Update</button>
+                            </div>
+                            <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+                            <script>
+                                // When image input change, update image preview
+                                $('#image').change(function () {
+                                    if ($(this).val() == "") {
+                                        $('.center img').attr('src', '{{product.image}}');
+                                    }
+                                    else {
+                                        $('.center img').attr('src', $(this).val());
+                                    }
+                                });
+
+                                $('#status option').each(function () {
+                                    if ($(this).val() == '{{product.status}}') {
+                                        $(this).attr('selected', 'selected');
+                                    }
+                                });
+
+                                $('#hot-product option').each(function () {
+                                    if ($(this).val() == '{{product.hot_product}}') {
+                                        $(this).attr('selected', 'selected');
+                                    }
+                                });
+
+                                $('#product-category option').each(function () {
+                                    if ($(this).val() == '{{product.category_Id}}') {
+                                        $(this).attr('selected', 'selected');
+                                    }
+                                });
+
+                                $('#product-brand option').each(function () {
+                                    if ($(this).val() == '{{product.brand_Id}}') {
+                                        $(this).attr('selected', 'selected');
+                                    }
+                                }); 
+
+                                function myFunction() {
+                                (async () => {
+                                    const name = $('#name').val();
+                                    const price = $('#price').val();
+                                    const quantity = $('#quantity').val();
+                                    const hotProduct = $('#hot-product').val();
+                                    const image = $('#image').val();
+                                    const description = $('#description').val();
+
+                                    if (name == "") {
+                                    $('#message').show();
+                                    $('#message').html('Please enter the name of the product!');
+                                    $('#name').focus();
+                                    return;
+                                    }
+                                    if (price == "") {
+                                    $('#message').show();
+                                    $('#message').html('Please enter the price of the product!');
+                                    $('#price').focus();
+                                    return;
+                                    }
+                                    if (parseInt(price) < 0) {
+                                    $('#message').show();
+                                    $('#message').html('The price of product must be greater than 0!');
+                                    $('#price').focus();
+                                    return;
+                                    }
+                                    if (quantity == "") {
+                                    $('#message').show();
+                                    $('#message').html('Please enter the quantity of the product!');
+                                    $('#quantity').focus();
+                                    return;
+                                    }
+                                    if (parseInt(quantity) < 0) {
+                                    $('#message').show();
+                                    $('#message').html('The quantity of product must be greater than 0!');
+                                    $('#quantity').focus();
+                                    return;
+                                    }
+                                    if (image == "") {
+                                        $('#message').show();
+                                        $('#message').html('Please enter the image of the product!');
+                                        $('#image').focus();
+                                        return;
+                                    }
+                                    if (description == "") {
+                                    $('#message').show();
+                                    $('#message').html('Please enter the description of the product!');
+                                    $('#description').focus();
+                                    return;
+                                    }
+
+                                    document.getElementById('update-product-form').submit();
+                                })();
+                                }
+                            </script>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

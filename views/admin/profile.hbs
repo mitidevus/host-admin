@@ -1,0 +1,77 @@
+<div class="background-wrapper">
+    <div class="mask d-flex align-items-center h-100 gradient-custom-3">
+        <div class="container h-100">
+            <div class="row d-flex justify-content-center align-items-center h-100">
+                <div class="col-12 col-md-9 col-lg-7 col-xl-6">
+                    <div class="card mt-4" style="border-radius: 15px;">
+                        <div class="card-body p-5">
+                            <h2 class="text-uppercase text-center mb-3">User profile</h2>
+                            <div class="container">
+                                <div class="main-body">
+                                    <div class="gutters-sm align-items-stretch">
+                                        <div>
+                                            <div class="card mb-3">
+                                                <div class="card-body">
+                                                    <div class="row">
+                                                        <div class="col-sm-3">
+                                                            <h6 class="mb-0">Avatar</h6>
+                                                        </div>
+                                                        <div class="center">
+                                                            <img src="{{user.avatar}}" alt="user_avatar" style="border: 2px solid #198754;" width="100px"
+                                                                height="100px" />
+                                                        </div>
+                                                    </div>
+                                                    <hr>
+                                                    <div class="row">
+                                                        <div class="col-sm-3">
+                                                            <h6 class="mb-0">Name</h6>
+                                                        </div>
+                                                        <div class="col-sm-9 text-secondary">
+                                                            {{user.fullname}}
+                                                        </div>
+                                                    </div>
+                                                    <hr>
+                                                    <div class="row">
+                                                        <div class="col-sm-3">
+                                                            <h6 class="mb-0">Email</h6>
+                                                        </div>
+                                                        <div class="col-sm-9 text-secondary">
+                                                            {{user.email}}
+                                                        </div>
+                                                    </div>
+                                                    <hr>
+                                                    <div class="row">
+                                                        <div class="col-sm-3">
+                                                            <h6 class="mb-0">Address</h6>
+                                                        </div>
+                                                        <div class="col-sm-9 text-secondary">
+                                                            {{user.address}}
+                                                        </div>
+                                                    </div>
+                                                    <hr>
+                                                    <div class="row">
+                                                        <div class="col-sm-3">
+                                                            <h6 class="mb-0">Phone number</h6>
+                                                        </div>
+                                                        <div class="col-sm-9 text-secondary">
+                                                            {{user.phone}}
+                                                        </div>
+                                                    </div>
+                                                    <hr>
+                                                    <div class="row d-flex">
+                                                        <a class="btn btn-success w-25 rounded align-items-center mx-auto"
+                                                            href="/admin/edit">Edit</a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

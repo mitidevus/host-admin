@@ -1,0 +1,95 @@
+<div class="background-wrapper">
+    <div class="mask d-flex align-items-center h-100 gradient-custom-3">
+        <div class="container h-100">
+            <div class="row d-flex justify-content-center align-items-center h-100">
+                <div class="col-12 col-md-9 col-lg-7 col-xl-6">
+                    <div class="card mt-4" style="border-radius: 15px;">
+                        <div class="card-body p-5">
+                            <div style="display: none;" id="message" class="alert alert-danger" role="alert">
+                            </div>
+
+                            {{#if error}}
+                            <div id="error_notification" class="alert alert-danger" role="alert">
+                                {{error}}
+                            </div>
+                            {{/if}}
+
+                            <h2 class="text-uppercase text-center mb-3">Add brand</h2>
+
+                            <form id="add-brand-form" method="POST" action="/brand/add">
+                                <div class="form-outline mb-2">
+                                    <label class="form-label" for="form3Example1cg">Brand name</label>
+                                    <input name="name" type="text" id="name" class="form-control form-control-lg"
+                                        required />
+                                </div>
+
+                                <div class="center">
+                                    <img id="img_display" src="https://www.meme-arsenal.com/memes/d8b908c80e97d7a695e108830806a835.jpg" alt="" width="100px"
+                                        height="100px" />
+                                </div>
+
+                                <div class="form-outline mb-4">
+                                    <label class="form-label" for="image">Image link</label>
+                                    <input name="image" type="text" id="image" class="form-control form-control-lg"
+                                        required />
+                                </div>
+
+                                <div class="d-grid gap-2">
+                                    <button onclick="myFunction()" class="btn btn-primary btn-lg gradient-custom-4"
+                                        type="button">Add</button>
+                                </div>
+
+                                {{!-- <input type="hidden" name="urlImage" id="url-image" /> --}}
+                            </form>
+
+                        </div>
+
+                        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+                        <script>
+                            function myFunction() {
+                                (async () => {
+                                    const name = $('#name').val();
+                                    const image = $('#image').val();
+
+                                    console.log("name: ", name);
+                                    console.log("image: ", image);
+
+                                    if (name == "") {
+                                        $('#error_notification').hide();
+                                        $('#message').show();
+                                        $('#message').html('You need to enter the brand name!');
+                                        $('#name').focus();
+                                        return;
+                                    }
+
+                                    if (image == "") {
+                                        $('#error_notification').hide();
+                                        $('#message').show();
+                                        $('#message').html('You need to enter the brand\'s image link!');
+                                        $('#image').focus();
+                                        return;
+                                    }
+
+                                    document.getElementById('add-brand-form').submit();
+                                })();
+                            }
+
+                            // update image
+                            $(document).ready(function () {
+                                $('#image').on('input', function () {
+                                    const imageLink = $('#image').val();
+                                    if(imageLink == "" || imageLink == null){
+                                        $('#img_display').attr('src', "https://www.meme-arsenal.com/memes/d8b908c80e97d7a695e108830806a835.jpg");
+                                    } else{
+                                        $('#img_display').attr('src', imageLink);
+                                    }
+                                });
+                            });
+
+                        </script>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
